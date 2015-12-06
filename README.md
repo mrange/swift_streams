@@ -14,7 +14,7 @@ let a : [Int] =
 print ("Array \(a)")
 ```
 
-`Push` semantics often has performance benefits over pull (lazy) because: 
+Push pipelines often has performance benefits over pull (lazy) because: 
 
 1. The code that drives the push pipeline is a for loop `for x in xs`. For loops in most languages is the most efficient way to iterate over collection.
 1. Minimizes end-of-stream checks to the loop that drives the pipeline (refined push pipelines detects if the pipelines will always iterate to the end and in those cases uses a specialized code path without end-of-stream checks)
