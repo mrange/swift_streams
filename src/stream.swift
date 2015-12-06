@@ -83,6 +83,19 @@ public func from_range<T> (vs : Range<T>) -> Source<T> {
   }
 }
 
+/// Creates a `Source<T>` from an open range
+///
+/// - Complexity: O(1).
+public func from_start (start : Int, toEnd: Int) -> Source<Int> {
+  return Source<Int> { c in
+    for var i = start; i < toEnd; ++i {
+      if (!c (i)) {
+        break;
+      }
+    }
+  }
+}
+
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 //                            ---==> PIPES <==--
@@ -228,12 +241,12 @@ public func first<T> () -> (Source<T> -> T?) {
 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
-//                           ---==> INFIXES <==--
+//                            INFIXES <==--
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
-infix operator |> { associativity left precedence 80 }
-infix operator <| { associativity right precedence 70 }
+infix operator |> { associativity left precedence 100 }
+infix operator <| { associativity right precedence 95 }
 
 /// "Pipes" left to right (f (l))
 public func |><T, U> (l : T, f : T -> U) -> U {

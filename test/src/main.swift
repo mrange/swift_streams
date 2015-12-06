@@ -84,6 +84,18 @@ func test__from_range () {
   expect_eq (e: e1, a: a1)
 }
 
+func test__from_start () {
+  print (__FUNCTION__)
+
+  let e0 : [Int] = [Int] (empty_range)
+  let a0 : [Int] = from_start (0, toEnd: 0) |> to_array ()
+  expect_eq (e: e0, a: a0)
+
+  let e1 : [Int] = [Int] (1..<10)
+  let a1 : [Int] = from_start (1, toEnd: 10) |> to_array ()
+  expect_eq (e: e1, a: a1)
+}
+
 func test__from_string () {
   print (__FUNCTION__)
 
@@ -270,6 +282,7 @@ let test_cases =
    // Sources
       test__from_array
     , test__from_range
+    , test__from_start
     , test__from_string
    // Pipes
     , test__filter
