@@ -30,6 +30,19 @@ func test__tight_loop () {
   print (acc)
 }
 
+func test__built_in () {
+  print (__FUNCTION__)
+
+  var acc : Int64 = 0
+
+  for outer in 1...10000 {
+    acc +=
+      (1...outer).reduce (0) { $0 + $1 }
+  }
+
+  print (acc)
+}
+
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 //                         ---==> TEST RUNNER <==--
@@ -38,7 +51,8 @@ func test__tight_loop () {
 
 let test_cases =
   [
-      test__tight_loop
+      test__built_in
+//    , test__tight_loop
   ]
 
 for test_case in test_cases {
