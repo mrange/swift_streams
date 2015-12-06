@@ -19,7 +19,7 @@ Push pipelines often has performance benefits over pull (lazy) because:
 1. The code that drives the push pipeline is a for loop `for x in xs`. For loops in most languages is the most efficient way to iterate over collection.
 1. Minimizes end-of-stream checks to the loop that drives the pipeline (refined push pipelines detects if the pipelines will always iterate to the end and in those cases uses a specialized code path without end-of-stream checks)
 
-Then of course there's the question how efficient `Push` streams can be implemented in Swift. Can Swift (like C++) inline the closures or do they create closure objects? This is one of the motivations for this library, to investigate how to write efficient functional  libraries in Swift.
+Then of course there's the question how efficient `Push` streams can be implemented in Swift. Can Swift (like C++) inline the closures or do we end up with "unnecessary" closure objects? This is one of the motivations for this library, to investigate how to write efficient functional  libraries in Swift.
 
 This library is inspired by the [F# Streams](http://nessos.github.io/Streams/) which in turn was inpired by Java 8 Streams.
 
