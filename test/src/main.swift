@@ -16,22 +16,31 @@
 
 var errors = 0
 
-func expect_eq<T : Equatable> (lno : Int, e : T, a : T) -> Bool {
+func expect_eq<T : Equatable> (fname : String = __FILE__, lno : Int = __LINE__ , e : T, a : T) -> Bool {
   if (e == a) {
     return true
   } else {
     ++errors
-    print ("expect_eq \(lno): \(e) == \(a)")
+    print ("\\E[31;40m\(fname)(\(lno)) expect_eq: \(e) == \(a)")
     return false
   }
 }
 
-func expect_eq<T : Equatable> (lno : Int, e : [T], a : [T]) -> Bool {
+func expect_eq<T : Equatable> (fname : String = __FILE__, lno : Int = __LINE__ , e : T?, a : T?) -> Bool {
   if (e == a) {
     return true
   } else {
     ++errors
-    print ("expect_eq \(lno): \(e) == \(a)")
+    print ("\(fname)(\(lno)) expect_eq: \(e) == \(a)")
+    return false
+  }
+}
+func expect_eq<T : Equatable> (fname : String = __FILE__, lno : Int = __LINE__, e : [T], a : [T]) -> Bool {
+  if (e == a) {
+    return true
+  } else {
+    ++errors
+    print ("\(fname)(\(lno)) expect_eq: \(e) == \(a)")
     return false
   }
 }
@@ -56,11 +65,11 @@ func test__from_array () {
 
   let e0 : [Int] = empty_array
   let a0 : [Int] = from_array (empty_array) |> to_array ()
-  expect_eq (__LINE__, e: e0, a: a0)
+  expect_eq (e: e0, a: a0)
 
   let e1 : [Int] = some_array
   let a1 : [Int] = from_array (some_array) |> to_array ()
-  expect_eq (__LINE__, e: e1, a: a1)
+  expect_eq (e: e1, a: a1)
 }
 
 func test__from_range () {
@@ -68,11 +77,11 @@ func test__from_range () {
 
   let e0 : [Int] = [Int] (empty_range)
   let a0 : [Int] = from_range (empty_range) |> to_array ()
-  expect_eq (__LINE__, e: e0, a: a0)
+  expect_eq (e: e0, a: a0)
 
   let e1 : [Int] = [Int] (some_range)
   let a1 : [Int] = from_range (some_range) |> to_array ()
-  expect_eq (__LINE__, e: e1, a: a1)
+  expect_eq (e: e1, a: a1)
 }
 
 func test__from_string () {
@@ -80,11 +89,11 @@ func test__from_string () {
 
   let e0 : String = empty_string
   let a0 : String = from_string (empty_string) |> to_string ()
-  expect_eq (__LINE__, e: e0, a: a0)
+  expect_eq (e: e0, a: a0)
 
   let e1 : String = some_string
   let a1 : String = from_string (some_string) |> to_string ()
-  expect_eq (__LINE__, e: e1, a: a1)
+  expect_eq (e: e1, a: a1)
 }
 
 // -----------------------------------------------------------------------------
@@ -93,6 +102,81 @@ func test__from_string () {
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
+func test__filter () {
+  print (__FUNCTION__)
+
+  let e0 : [Int] = []
+  let a0 : [Int] =
+    from_array (empty_array)
+    |> filter { $0 % 2 == 0 }
+    |> to_array ()
+  expect_eq (e: e0, a: a0)
+
+  let e1 : [Int] = some_array.filter { $0 % 2 == 0 }
+  let a1 : [Int] =
+    from_array (some_array)
+    |> filter { $0 % 2 == 0 }
+    |> to_array ()
+  expect_eq (e: e1, a: a1)
+}
+
+func test__map () {
+  print (__FUNCTION__)
+
+  let e0 : [String] = []
+  let a0 : [String] =
+    from_array (empty_array)
+    |> map { "\($0)" }
+    |> to_array ()
+  expect_eq (e: e0, a: a0)
+
+  let e1 : [String] = some_array.map { "\($0)" }
+  let a1 : [String] =
+    from_array (some_array)
+    |> map { "\($0)" }
+    |> to_array ()
+  expect_eq (e: e1, a: a1)
+}
+
+func test__take () {
+  print (__FUNCTION__)
+
+  for variant in [0 , 3 ,some_array.count] {
+    let e0 : [Int] = []
+    let a0 : [Int] =
+      from_array (empty_array)
+      |> take (variant)
+      |> to_array ()
+    expect_eq (e: e0, a: a0)
+
+    let e1 : [Int] = Array (some_array[0..<variant])
+    let a1 : [Int] =
+      from_array (some_array)
+      |> take (variant)
+      |> to_array ()
+    expect_eq (e: e1, a: a1)
+  }
+}
+
+func test__skip () {
+  print (__FUNCTION__)
+
+  for variant in [0 , 3 ,some_array.count] {
+    let e0 : [Int] = []
+    let a0 : [Int] =
+      from_array (empty_array)
+      |> skip (variant)
+      |> to_array ()
+    expect_eq (e: e0, a: a0)
+
+    let e1 : [Int] = Array (some_array[variant..<some_array.count])
+    let a1 : [Int] =
+      from_array (some_array)
+      |> skip (variant)
+      |> to_array ()
+    expect_eq (e: e1, a: a1)
+  }
+}
 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
@@ -100,6 +184,53 @@ func test__from_string () {
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
+func test__fold () {
+  print (__FUNCTION__)
+
+  let e0 : Int = 1
+  let a0 : Int = from_range (empty_range) |> fold (1) { $0 + $1 }
+  expect_eq (e: e0, a: a0)
+
+  let e1 : Int = 55
+  let a1 : Int = from_range (some_range) |> fold (0) { $0 + $1 }
+  expect_eq (e: e1, a: a1)
+}
+
+func test__to_array () {
+  print (__FUNCTION__)
+
+  let e0 : [Int] = empty_array
+  let a0 : [Int] = from_range (empty_range) |> to_array ()
+  expect_eq (e: e0, a: a0)
+
+  let e1 : [Int] = [Int] (some_range)
+  let a1 : [Int] = from_range (some_range) |> to_array ()
+  expect_eq (e: e1, a: a1)
+}
+
+func test__to_string () {
+  print (__FUNCTION__)
+
+  let e0 : String   = empty_string
+  let a0 : String   = from_string (empty_string) |> to_string ()
+  expect_eq (e: e0, a: a0)
+
+  let e1 : String   = some_string
+  let a1 : String   = from_string (some_string) |> to_string ()
+  expect_eq (e: e1, a: a1)
+}
+
+func test__find () {
+  print (__FUNCTION__)
+
+  let e0 : Int? = nil
+  let a0 : Int? = from_range (empty_range) |> first ()
+  expect_eq (e: e0, a: a0)
+
+  let e1 : Int? = some_array[0]
+  let a1 : Int? = from_array (some_array) |> first ()
+  expect_eq (e: e1, a: a1)
+}
 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
@@ -118,27 +249,50 @@ func test__use_cases () {
     |> take (10)
     |> map { $0 + 1 }
     |> to_array ()
-  expect_eq (__LINE__, e: e0, a: a0)
+  expect_eq (e: e0, a: a0)
 
   let e1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
   let a1 =
     to_array ()
     <| take (10)
     <| from_range (1...10000000)
-  expect_eq (__LINE__, e: e1, a: a1)
+  expect_eq (e: e1, a: a1)
 }
 
-func run_test (test : Void -> Void) -> Void {
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+//                         ---==> TEST RUNNER <==--
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+let test_cases =
+  [
+   // Sources
+      test__from_array
+    , test__from_range
+    , test__from_string
+   // Pipes
+    , test__filter
+    , test__map
+    , test__take
+    , test__skip
+    , test__use_cases
+   // Sinks
+    , test__fold
+    , test__to_array
+    , test__to_string
+    , test__find
+  ]
+
+for test_case in test_cases {
   // TODO: Catch exceptions
-  return test ()
+  test_case ()
 }
-
-run_test (test__from_range)
-run_test (test__from_string)
-run_test (test__use_cases)
 
 if errors == 0 {
   print ("All tests passed!")
 } else {
   print ("\(errors) test(s) failed!")
 }
+
+// -----------------------------------------------------------------------------

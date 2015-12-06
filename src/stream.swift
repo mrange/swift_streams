@@ -14,6 +14,8 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------------------
 
+// -----------------------------------------------------------------------------
+
 public struct Source<T> {
   public let f: (T -> Bool) -> Void
 }
@@ -165,13 +167,12 @@ public func skip<T> (atLeast : Int) -> (Source<T> -> Source<T>) {
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
-
 /// Creates a function that folds elements in `Source<T>`
 /// using an initial value and a folder function
 ///
 /// - Complexity: O(n).
-public func fold<T, U> () -> (Source<T>, U, (U, T) -> U) -> U {
-  return { (s, initial, folder) in
+public func fold<T, U> (initial : U, folder : (U, T) -> U) -> (Source<T> -> U) {
+  return { s in
     var r = initial
 
     s.f {
@@ -225,6 +226,12 @@ public func first<T> () -> (Source<T> -> T?) {
   }
 }
 
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+//                           ---==> INFIXES <==--
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
 infix operator |> { associativity left precedence 80 }
 infix operator <| { associativity right precedence 70 }
 
@@ -237,3 +244,5 @@ public func |><T, U> (l : T, f : T -> U) -> U {
 public func <|<T, U> (f : T -> U, l : T) -> U {
   return f (l)
 }
+
+// -----------------------------------------------------------------------------
