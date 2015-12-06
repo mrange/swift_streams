@@ -24,5 +24,13 @@ Then of course there's the question how efficient `Push` streams can be implemen
 This library is inspired by the [F# Streams](http://nessos.github.io/Streams/) which in turn was inpired by Java 8 Streams.
 
 Push pipelines have drawbacks compared to pull pipelines
+
 1. Once started they will run to the end (F# Streams manages this by introducing a more complex pipeline definition)
 2. Certain operators such as `order_by/then_by` are difficult to implement
+
+TODO
+====
+
+1. Extend the `test_suite`
+2. Implement the most obvious pipeline operators
+3. Package `swift_streams` in a way that's easily consumable
